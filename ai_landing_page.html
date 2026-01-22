@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus AI | Premium AI Solutions</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        :root {
+            --dark-bg: #05070a;
+            --electric-blue: #00f2fe;
+            --deep-purple: #7000ff;
+            --gradient-primary: linear-gradient(135deg, var(--electric-blue), var(--deep-purple));
+            --glass-bg: rgba(15, 17, 23, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+        
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            letter-spacing: -0.02em;
+            font-weight: 700;
+        }
+        
+        /* Glassmorphism Effect */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+        }
+        
+        /* Gradient Text */
+        .gradient-text {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Glow Effects */
+        .glow-button {
+            position: relative;
+            background: var(--gradient-primary);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .glow-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px var(--electric-blue), 0 0 40px var(--deep-purple);
+        }
+        
+        .glow-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+            opacity: 0.2;
+            filter: blur(20px);
+            z-index: -1;
+        }
+        
+        .ghost-button {
+            background: transparent;
+            border: 2px solid var(--electric-blue);
+            color: var(--electric-blue);
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .ghost-button:hover {
+            background: rgba(0, 242, 254, 0.1);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+        }
+        
+        /* Navbar */
+        .navbar {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--electric-blue) !important;
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding-top: 60px;
+        }
+        
+        .badge-glow {
+            background: var(--gradient-primary);
+            padding: 8px 20px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px var(--electric-blue);
+        }
+        
+        /* Features Grid */
+        .feature-card {
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border: 1px solid var(--electric-blue);
+            box-shadow: 0 10px 30px rgba(0, 242, 254, 0.2);
+        }
+        
+        /* Neural Network Background */
+        .neural-network {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.15;
+        }
+        
+        .neural-node {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--electric-blue);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--electric-blue);
+        }
+        
+        .neural-line {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--electric-blue), transparent);
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .hero-section {
+                min-height: auto;
+                padding: 100px 0;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+        }
+        
+        /* Glow Blobs */
+        .glow-blob {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            filter: blur(60px);
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .blob-1 {
+            background: var(--electric-blue);
+            top: 10%;
+            left: 10%;
+        }
+
+        .blob-2 {
+            background: var(--deep-purple);
+            bottom: 10%;
+            right: 10%;
+        }
+
+        /* Luxury Navbar Enhancements */
+        .nav-link {
+            position: relative;
+            padding-bottom: 10px !important;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .letter-spacing-1 {
+            letter-spacing: 0.1em;
+        }
+
+        .hover-opacity-100 {
+            transition: opacity 0.3s ease;
+        }
+
+        .hover-opacity-100:hover {
+            opacity: 1 !important;
+        }
+
+        .social-icons a:hover i {
+            transform: translateY(-3px);
+            transition: transform 0.3s ease;
+        }
+
+        /* Enhanced footer inputs */
+        .footer-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 8px;
+            padding: 12px 20px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .footer-input:focus {
+            outline: none;
+            border-color: var(--electric-blue) !important;
+            box-shadow: 0 0 0 0.25rem rgba(0, 242, 254, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <!-- Neural Network Background -->
+    <div class="neural-network" id="neuralNetwork"></div>
+    
+    <!-- Glow Blobs -->
+    <div class="glow-blob blob-1"></div>
+    <div class="glow-blob blob-2"></div>
+    
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-3" href="#">
+                <span class="gradient-text">Nexus</span>AI
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item mx-2">
+                        <a class="nav-link" href="#">Home</a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class="nav-link" href="#">Features</a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class="nav-link" href="#">Solutions</a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class="nav-link" href="#">Pricing</a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                </ul>
+                <div class="ms-lg-3 mt-3 mt-lg-0">
+                    <button class="glow-button px-4 py-2">
+                        <i data-lucide="sparkles" stroke-width="1.5" size="18" class="me-2"></i>
+                        Get Started
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section container-fluid">
+        <div class="container py-5">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-5 mb-lg-0">
+                    <div class="text-center text-lg-start">
+                        <span class="badge-glow">New: GPT-5 Integration</span>
+                        <h1 class="display-2 fw-bold mb-4">
+                            Transform Your Business with <br>
+                            <span class="gradient-text">AI Intelligence</span>
+                        </h1>
+                        <p class="lead mb-5 opacity-75">
+                            Harness the power of cutting-edge artificial intelligence to automate processes, 
+                            gain insights, and drive innovation across your organization.
+                        </p>
+                        <div class="d-flex flex-column flex-lg-row gap-3 justify-content-center justify-content-lg-start">
+                            <button class="glow-button btn-lg px-4 py-3">Start Free Trial</button>
+                            <button class="ghost-button btn-lg px-4 py-3">View Demo</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 d-none d-lg-block">
+                    <div class="glass-card p-4 h-100 d-flex align-items-center justify-content-center">
+                        <div class="text-center">
+                            <i data-lucide="cpu" stroke-width="1" size="100" class="gradient-text mb-3"></i>
+                            <h3 class="fw-bold">AI-Powered Insights</h3>
+                            <p class="opacity-75">Real-time analytics and predictive modeling</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-5">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h2 class="display-6 fw-bold">Powerful <span class="gradient-text">AI Features</span></h2>
+                <p class="lead opacity-75">Everything you need to transform your business with artificial intelligence</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="glass-card feature-card p-4 h-100">
+                        <div class="icon-box mb-3">
+                            <i data-lucide="zap" stroke-width="1.5" size="40" class="gradient-text"></i>
+                        </div>
+                        <h4 class="fw-bold">Predictive Analytics</h4>
+                        <p class="opacity-75">Forecast trends and behaviors with unprecedented accuracy using our advanced algorithms.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="glass-card feature-card p-4 h-100">
+                        <div class="icon-box mb-3">
+                            <i data-lucide="shield-check" stroke-width="1.5" size="40" class="gradient-text"></i>
+                        </div>
+                        <h4 class="fw-bold">Automated Security</h4>
+                        <p class="opacity-75">Protect your systems with AI-powered threat detection and prevention mechanisms.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="glass-card feature-card p-4 h-100">
+                        <div class="icon-box mb-3">
+                            <i data-lucide="brain" stroke-width="1.5" size="40" class="gradient-text"></i>
+                        </div>
+                        <h4 class="fw-bold">Neural Processing</h4>
+                        <p class="opacity-75">Leverage deep learning models to understand complex patterns in your data.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="glass-card feature-card p-4 h-100">
+                        <div class="icon-box mb-3">
+                            <i data-lucide="bot" stroke-width="1.5" size="40" class="gradient-text"></i>
+                        </div>
+                        <h4 class="fw-bold">Intelligent Automation</h4>
+                        <p class="opacity-75">Automate repetitive tasks and processes with AI agents that learn and improve over time.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="glass-card feature-card p-4 h-100">
+                        <div class="icon-box mb-3">
+                            <i data-lucide="globe" stroke-width="1.5" size="40" class="gradient-text"></i>
+                        </div>
+                        <h4 class="fw-bold">Natural Language Processing</h4>
+                        <p class="opacity-75">Understand and generate human language with our state-of-the-art NLP capabilities.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-5">
+        <div class="container py-4">
+            <div class="row">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5 class="fw-bold gradient-text fs-3">NexusAI</h5>
+                    <p class="opacity-75 mb-4">Transforming businesses with cutting-edge artificial intelligence solutions.</p>
+                    <div class="social-icons d-flex gap-3">
+                        <a href="#" class="text-decoration-none text-white opacity-75 hover-opacity-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16">
+                                <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.05l3.594 4.57L12.6.75Zm-.86 13.028h1.36L4.387 2.114H2.98l8.829 11.664Z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-decoration-none text-white opacity-75 hover-opacity-100">
+                            <i data-lucide="linkedin" stroke-width="1.5" size="20"></i>
+                        </a>
+                        <a href="#" class="text-decoration-none text-white opacity-75 hover-opacity-100">
+                            <i data-lucide="github" stroke-width="1.5" size="20"></i>
+                        </a>
+                        <a href="#" class="text-decoration-none text-white opacity-75 hover-opacity-100">
+                            <i data-lucide="youtube" stroke-width="1.5" size="20"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-2 col-6 mb-4 mb-md-0">
+                    <h6 class="fw-bold text-uppercase letter-spacing-1">Product</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-decoration-none opacity-75 hover-opacity-100">Features</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none opacity-75 hover-opacity-100">Solutions</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none opacity-75 hover-opacity-100">Pricing</a></li>
+                        <li><a href="#" class="text-decoration-none opacity-75 hover-opacity-100">Demo</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 col-6 mb-4 mb-md-0">
+                    <h6 class="fw-bold text-uppercase letter-spacing-1">Resources</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-decoration-none opacity-75 hover-opacity-100">Documentation</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none opacity-75 hover-opacity-100">Tutorials</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none opacity-75 hover-opacity-100">Blog</a></li>
+                        <li><a href="#" class="text-decoration-none opacity-75 hover-opacity-100">Support</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="fw-bold text-uppercase letter-spacing-1">Newsletter</h6>
+                    <p class="opacity-75 mb-4">Stay updated with our latest AI innovations.</p>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control footer-input rounded-3 ps-4" placeholder="Your email">
+                        <button class="btn glow-button rounded-3 px-4" type="button">Join</button>
+                    </div>
+                    <p class="opacity-50 small">We respect your privacy. Unsubscribe at any time.</p>
+                </div>
+            </div>
+            <hr class="my-4 opacity-25">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                <p class="mb-0 opacity-75">© 2024 NexusAI. All rights reserved.</p>
+                <div class="mt-3 mt-md-0">
+                    <a href="#" class="text-decoration-none opacity-75 hover-opacity-100 me-3">Privacy Policy</a>
+                    <a href="#" class="text-decoration-none opacity-75 hover-opacity-100 me-3">Terms of Service</a>
+                    <a href="#" class="text-decoration-none opacity-75 hover-opacity-100">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Initialize Lucide Icons -->
+    <script>
+        lucide.createIcons();
+    </script>
+
+    <!-- Neural Network Animation Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const neuralNetwork = document.getElementById('neuralNetwork');
+            const nodesCount = 30;
+            const connectionsCount = 50;
+
+            // Create nodes
+            for (let i = 0; i < nodesCount; i++) {
+                const node = document.createElement('div');
+                node.className = 'neural-node';
+                node.style.left = `${Math.random() * 100}%`;
+                node.style.top = `${Math.random() * 100}%`;
+                neuralNetwork.appendChild(node);
+            }
+
+            // Create connections
+            for (let i = 0; i < connectionsCount; i++) {
+                const line = document.createElement('div');
+                line.className = 'neural-line';
+
+                // Random positioning
+                const startX = Math.random() * 100;
+                const startY = Math.random() * 100;
+                const endX = Math.random() * 100;
+                const endY = Math.random() * 100;
+
+                // Calculate length and angle
+                const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+                const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+
+                // Position and rotate the line
+                line.style.width = `${length}%`;
+                line.style.left = `${startX}%`;
+                line.style.top = `${startY}%`;
+                line.style.transform = `rotate(${angle}deg)`;
+                line.style.transformOrigin = '0 0';
+
+                neuralNetwork.appendChild(line);
+            }
+
+            // Animate nodes
+            const nodes = document.querySelectorAll('.neural-node');
+            nodes.forEach(node => {
+                animateNode(node);
+            });
+
+            function animateNode(node) {
+                const duration = 3000 + Math.random() * 5000; // 3-8 seconds
+
+                // Random movement
+                const moveX = (Math.random() - 0.5) * 20;
+                const moveY = (Math.random() - 0.5) * 20;
+
+                node.animate([
+                    { transform: 'translate(0, 0)' },
+                    { transform: `translate(${moveX}%, ${moveY}%)` },
+                    { transform: 'translate(0, 0)' }
+                ], {
+                    duration: duration,
+                    iterations: Infinity
+                });
+            }
+        });
+    </script>
+</body>
+</html>

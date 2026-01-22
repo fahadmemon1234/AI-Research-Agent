@@ -1,55 +1,81 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!-- Sync Impact Report:
+Version change: N/A (initial creation) → 1.0.0
+Added sections: All principles and sections as per project requirements
+Removed sections: None
+Templates requiring updates: N/A
+Follow-up TODOs: None
+-->
+
+# Personal AI Research Agent Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Advanced RAG-Based Knowledge Assistant
+Every feature must enhance the core capability of retrieving and generating answers from user-uploaded documents using Retrieval-Augmented Generation (RAG). The system shall support PDF, TXT, DOCX formats and web links with real-time chat functionality and user-specific knowledge bases.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Production-Ready Architecture
+All components must be designed for scalability and reliability in a production environment. The system shall utilize modern tech stack including Next.js for frontend, FastAPI for backend, Neon PostgresQL with pgvector for vector embeddings, and Google's Gemini API for advanced reasoning and generation.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Privacy-First Approach (NON-NEGOTIABLE)
+User data ownership and privacy must be preserved at all costs. All user documents and conversations shall be stored securely with appropriate access controls. The system shall implement proper authentication using JWT/OAuth and ensure data isolation between users.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Multi-User Support with Authentication
+The system must support multiple concurrent users with secure authentication mechanisms. Implementation shall include user registration, login, role-based access control, and proper session management using industry-standard security practices.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Hybrid Retrieval Excellence
+Focus on achieving superior retrieval accuracy (>90%) through hybrid approaches combining semantic search with keyword matching. Implementation shall include LlamaIndex for advanced indexing, hybrid retrievers, and rerankers for optimal results.
 
-### [PRINCIPLE_6_NAME]
+### VI. Advanced AI Integration
+The system shall leverage Google's Gemini API (Gemini-1.5-Pro or Flash) for reasoning, generation, embeddings, and multilingual support. Implementation must include proper error handling, fallback mechanisms, and prompt engineering for optimal responses.
 
+## Additional Constraints
 
-[PRINCIPLE__DESCRIPTION]
+### Technology Stack Requirements
+- Frontend: Next.js (with SSR/SSG capabilities, API routes) + Bootstrap for responsive UI
+- Backend: FastAPI (Python) with async support and WebSocket integration
+- Database: Neon PostgresQL (serverless, scalable) with pgvector extension
+- LLM Integration: Google Generative AI SDK with Gemini models
+- RAG Framework: LlamaIndex with hybrid retrievers and rerankers
+- Authentication: JWT with FastAPI Users or Auth0 integration
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### Performance Standards
+- Document indexing must be asynchronous with real-time progress updates via WebSockets
+- Query response time should be under 3 seconds for typical requests
+- System must handle concurrent users with proper resource management
+- Vector embeddings must be computed efficiently for optimal retrieval
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### Deployment Policy
+- Frontend: Deployed on Vercel
+- Backend: Deployed on Render/Fly.io
+- Database: Neon Postgres cloud service
+- Environment: Python 3.11+, Node.js 18+
+- Secrets: Managed via environment variables (.env files)
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+## Development Workflow
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### Code Quality Requirements
+- All code must follow established Python (PEP 8) and JavaScript/TypeScript standards
+- Type hints required for all Python functions
+- Comprehensive error handling and logging
+- Proper documentation for all public interfaces
+- 80% test coverage minimum with unit and integration tests
+
+### Review Process
+- All pull requests must pass automated tests before review
+- At least one peer review required for all changes
+- Security implications must be considered for all new features
+- Performance impact assessment required for major changes
+
+### Quality Gates
+- All tests must pass in CI pipeline
+- Code coverage must not drop below 80%
+- Security scanning must pass without critical vulnerabilities
+- Performance benchmarks must meet established baselines
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution governs all development activities for the Personal AI Research Agent project. All features, changes, and implementations must comply with these principles. Any deviation requires explicit approval from project stakeholders with proper documentation of the rationale.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+Amendments to this constitution require formal documentation of the change, approval from project leadership, and a clear migration plan for existing implementations. All pull requests and code reviews must verify compliance with these principles.
+
+**Version**: 1.0.0 | **Ratified**: 2026-01-21 | **Last Amended**: 2026-01-21

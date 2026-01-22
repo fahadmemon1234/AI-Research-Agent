@@ -1,0 +1,44 @@
+/* Placeholder styling: Inhe apne <style jsx> mein add karein */
+.luxury-input::placeholder {
+  color: rgba(255, 255, 255, 0.3) !important; /* Soft white/grey placeholder */
+  font-weight: 300;
+  letter-spacing: 0.5px;
+}
+
+/* Firefox ke liye */
+.luxury-input::-moz-placeholder {
+  color: rgba(255, 255, 255, 0.3) !important;
+  opacity: 1;
+}
+
+/* Chrome/Safari ke liye */
+.luxury-input::-webkit-input-placeholder {
+  color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Safari fix: Placeholder gayab hone se rokne ke liye */
+.luxury-input:focus::placeholder {
+  color: rgba(255, 255, 255, 0.1) !important;
+  transition: 0.3s;
+}
+
+.luxury-input {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 18px !important;
+  padding: 16px 20px 16px 50px !important;
+  color: #fff !important;
+  font-size: 0.95rem;
+  transition: all 0.4s ease;
+}
+
+.luxury-input::placeholder {
+  color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.luxury-input:focus {
+  border-color: #00d2ff !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 0 0 20px rgba(0, 210, 255, 0.1) !important;
+  outline: none;
+}
