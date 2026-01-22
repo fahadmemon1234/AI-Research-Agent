@@ -1,13 +1,14 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
 from datetime import datetime
 from enum import Enum
+import json
 
 class DocumentStatus(str, Enum):
-    PENDING = "pending"
-    PROCESSING = "processing"
-    READY = "ready"
-    FAILED = "failed"
+    PENDING = "PENDING"
+    PROCESSING = "PROCESSING"
+    READY = "READY"
+    FAILED = "FAILED"
 
 class DocumentBase(BaseModel):
     filename: str
@@ -15,7 +16,7 @@ class DocumentBase(BaseModel):
     file_size: int
     mime_type: Optional[str] = None
     pages_count: Optional[int] = None
-    metadata: Optional[str] = None  # JSON string
+    document_metadata: Optional[str] = None  # JSON string
 
 class DocumentCreate(DocumentBase):
     pass
@@ -31,8 +32,7 @@ class DocumentInDB(DocumentBase):
     status: DocumentStatus
     processed_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class DocumentResponse(DocumentInDB):
     pass

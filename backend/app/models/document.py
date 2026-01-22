@@ -5,10 +5,10 @@ from sqlalchemy.orm import relationship
 from enum import Enum
 
 class DocumentStatus(Enum):
-    PENDING = "pending"
-    PROCESSING = "processing"
-    READY = "ready"
-    FAILED = "failed"
+    PENDING = "PENDING"
+    PROCESSING = "PROCESSING"
+    READY = "READY"
+    FAILED = "FAILED"
 
 class Document(Base):
     __tablename__ = "documents"

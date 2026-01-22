@@ -4,6 +4,18 @@ from app.core.logging_config import log_info
 from app.api.v1.routes import router as api_router
 from app.database.init_db import init_db
 import os
+import json
+from datetime import datetime
+from decimal import Decimal
+
+# Custom JSON encoder to handle datetime and other non-serializable objects
+class DateTimeEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        if isinstance(obj, Decimal):
+            return float(obj)
+        return super().default(obj)
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -11,6 +23,21 @@ app = FastAPI(
     description="API for the AI Knowledge Assistant application",
     version="1.0.0"
 )
+
+# Set the custom json loads function to handle datetime serialization
+from fastapi.responses import JSONResponse
+
+# Override the default JSONResponse to use our custom encoder
+original_init = JSONResponse.__init__
+
+def patched_init(self, content=None, **kwargs):
+    if content is not None:
+        # Serialize and deserialize with our custom encoder to handle datetime
+        json_str = json.dumps(content, cls=DateTimeEncoder)
+        content = json.loads(json_str)
+    original_init(self, content, **kwargs)
+
+JSONResponse.__init__ = patched_init
 
 # Add CORS middleware
 app.add_middleware(
