@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from datetime import timedelta
-from app.schemas.user import UserCreate, UserResponse, UserLogin
+from app.schemas.user import UserCreate, UserResponse, UserLogin, UserUpdate
 from app.services.user_service import UserService
 from app.core.auth import create_access_token, verify_password
 from app.database.session import get_db
@@ -77,3 +77,23 @@ def get_current_user_profile(current_user: User = Depends(require_active_user)):
     """
     # Return the user object directly to match response_model
     return UserResponse.model_validate(current_user)
+
+
+@router.put("/me", response_model=UserResponse)
+def update_current_user_profile(
+    user_update: UserUpdate,
+    current_user: User = Depends(require_active_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Update current user's profile information
+    """
+    try:
+        # Update user profile
+        updated_user = UserService.update_user(db, current_user.id, user_update)
+        return UserResponse.model_validate(updated_user)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Profile update failed: {str(e)}"
+        )

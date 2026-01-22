@@ -1,15 +1,17 @@
-'use client';
+"use client";
+
+import Link from "next/link";
 
 const Footer = () => {
   return (
     <>
       <style jsx>{`
         /* Global Font & Theme */
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&display=swap');
+        @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&display=swap");
 
         .luxury-footer {
           background-color: #020408;
-          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-family: "Plus Jakarta Sans", sans-serif;
           padding-top: 80px;
           padding-bottom: 40px;
           border-top: 1px solid rgba(255, 255, 255, 0.05);
@@ -22,7 +24,11 @@ const Footer = () => {
           position: absolute;
           width: 400px;
           height: 400px;
-          background: radial-gradient(circle, rgba(0, 210, 255, 0.05) 0%, rgba(0,0,0,0) 70%);
+          background: radial-gradient(
+            circle,
+            rgba(0, 210, 255, 0.05) 0%,
+            rgba(0, 0, 0, 0) 70%
+          );
           top: -200px;
           left: -100px;
           pointer-events: none;
@@ -33,7 +39,11 @@ const Footer = () => {
           font-weight: 800;
           font-size: 1.6rem;
           letter-spacing: -1px;
-          background: linear-gradient(180deg, #FFFFFF 0%, rgba(255, 255, 255, 0.6) 100%);
+          background: linear-gradient(
+            180deg,
+            #ffffff 0%,
+            rgba(255, 255, 255, 0.6) 100%
+          );
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
         }
@@ -149,24 +159,36 @@ const Footer = () => {
 
       <footer className="luxury-footer">
         <div className="footer-glow"></div>
-        
+
         <div className="container">
           <div className="row g-5">
             {/* Branding Section */}
             <div className="col-lg-4 col-md-12">
               <div className="footer-logo mb-4">
-                GENIUS<span style={{color: '#00d2ff'}}>.AI</span>
+                GENIUS<span style={{ color: "#00d2ff" }}>.AI</span>
               </div>
-              <p className="text-white-50 mb-4 pe-lg-5" style={{ lineHeight: '1.8' }}>
-                Transform your static documents into an interactive brain. Get instant insights using our neural-powered engine.
+              <p
+                className="text-white-50 mb-4 pe-lg-5"
+                style={{ lineHeight: "1.8" }}
+              >
+                Transform your static documents into an interactive brain. Get
+                instant insights using our neural-powered engine.
               </p>
-              
+
               {/* Social Media Icons - Bootstrap Icons Used */}
               <div className="d-flex gap-3">
-                <a href="#" className="social-btn"><i className="bi bi-twitter-x"></i></a>
-                <a href="#" className="social-btn"><i className="bi bi-linkedin"></i></a>
-                <a href="#" className="social-btn"><i className="bi bi-discord"></i></a>
-                <a href="#" className="social-btn"><i className="bi bi-github"></i></a>
+                <a href="#" className="social-btn">
+                  <i className="bi bi-twitter-x"></i>
+                </a>
+                <a href="#" className="social-btn">
+                  <i className="bi bi-linkedin"></i>
+                </a>
+                <a href="#" className="social-btn">
+                  <i className="bi bi-discord"></i>
+                </a>
+                <a href="#" className="social-btn">
+                  <i className="bi bi-github"></i>
+                </a>
               </div>
             </div>
 
@@ -174,30 +196,70 @@ const Footer = () => {
             <div className="col-6 col-md-3 col-lg-2">
               <h6 className="footer-heading">Platform</h6>
               <ul className="list-unstyled">
-                <li><a href="#" className="footer-link">Dashboard</a></li>
-                <li><a href="#" className="footer-link">AI Analysis</a></li>
-                <li><a href="#" className="footer-link">Pro Plan</a></li>
-                <li><a href="#" className="footer-link">Security</a></li>
+                <li>
+                  <Link href="/dashboard" passHref legacyBehavior>
+                    <a className="footer-link">Dashboard</a>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/ai-analysis" passHref legacyBehavior>
+                    <a className="footer-link">AI Analysis</a>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/pro-plan" passHref legacyBehavior>
+                    <a className="footer-link">Pro Plan</a>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/security" passHref legacyBehavior>
+                    <a className="footer-link">Security</a>
+                  </Link>
+                </li>
               </ul>
             </div>
 
             <div className="col-6 col-md-3 col-lg-2">
               <h6 className="footer-heading">Company</h6>
               <ul className="list-unstyled">
-                <li><a href="#" className="footer-link">Privacy</a></li>
-                <li><a href="#" className="footer-link">Terms</a></li>
-                <li><a href="#" className="footer-link">Cookies</a></li>
-                <li><a href="#" className="footer-link">Support</a></li>
+                <li>
+                  <Link href="/privacy" passHref legacyBehavior>
+                    <a className="footer-link">Privacy</a>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms" passHref legacyBehavior>
+                    <a className="footer-link">Terms</a>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/cookies" passHref legacyBehavior>
+                    <a className="footer-link">Cookies</a>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/support" passHref legacyBehavior>
+                    <a className="footer-link">Support</a>
+                  </Link>
+                </li>
               </ul>
             </div>
 
             {/* Newsletter Bento Box */}
             <div className="col-lg-4">
               <div className="newsletter-card">
-                <h6 className="footer-heading mb-3" style={{ color: '#fff' }}>Stay Ahead</h6>
-                <p className="small text-white-50 mb-4">Get the latest AI breakthroughs delivered weekly.</p>
+                <h6 className="footer-heading mb-3" style={{ color: "#fff" }}>
+                  Stay Ahead
+                </h6>
+                <p className="small text-white-50 mb-4">
+                  Get the latest AI breakthroughs delivered weekly.
+                </p>
                 <div className="premium-input-group">
-                  <input type="email" className="premium-input" placeholder="Enter your email" />
+                  <input
+                    type="email"
+                    className="premium-input"
+                    placeholder="Enter your email"
+                  />
                   <button className="btn-subscribe">Join</button>
                 </div>
               </div>
@@ -205,17 +267,31 @@ const Footer = () => {
           </div>
 
           {/* Divider */}
-          <hr className="my-5" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }} />
+          <hr
+            className="my-5"
+            style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
+          />
 
           {/* Bottom Bar */}
           <div className="row align-items-center">
             <div className="col-md-6 text-center text-md-start">
-              <p className="mb-0 text-white-50 small" style={{ letterSpacing: '0.5px' }}>
-                &copy; {new Date().getFullYear()} GENIUS AI LABS. ALL RIGHTS RESERVED.
+              <p
+                className="mb-0 text-white-50 small"
+                style={{ letterSpacing: "0.5px" }}
+              >
+                &copy; {new Date().getFullYear()} GENIUS AI LABS. ALL RIGHTS
+                RESERVED.
               </p>
             </div>
             <div className="col-md-6 text-center text-md-end mt-3 mt-md-0">
-              <div className="d-inline-flex align-items-center" style={{ fontSize: '0.7rem', color: '#00ff88', fontWeight: 800 }}>
+              <div
+                className="d-inline-flex align-items-center"
+                style={{
+                  fontSize: "0.7rem",
+                  color: "#00ff88",
+                  fontWeight: 800,
+                }}
+              >
                 <span className="status-dot"></span>
                 ALL SYSTEMS OPERATIONAL
               </div>
