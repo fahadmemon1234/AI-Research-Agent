@@ -176,7 +176,21 @@ const Navbar = () => {
                 <li className="nav-item">
                   <Link href="/" className={`nav-link nav-link-custom ${isActive('/') ? 'active' : ''}`}>Home</Link>
                 </li>
-                
+
+                {/* Platform Dropdown */}
+                <li className="nav-item dropdown px-lg-2">
+                  <a className="nav-link nav-link-custom dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                    Platform
+                  </a>
+                  <ul className="dropdown-menu dropdown-menu-end dropdown-luxury border-0">
+                    <li><Link href="/ai-analysis" className="dropdown-item dropdown-item-luxury">AI Analysis</Link></li>
+                    <li><Link href="/pro-plan" className="dropdown-item dropdown-item-luxury">Pro Plan</Link></li>
+                    <li><Link href="/pricing" className="dropdown-item dropdown-item-luxury">Pricing</Link></li>
+                    <li><hr className="dropdown-divider opacity-10 mx-3" /></li>
+                    <li><Link href="/core-engine" className="dropdown-item dropdown-item-luxury">Core Engine</Link></li>
+                  </ul>
+                </li>
+
                 {isAuthenticated ? (
                   <>
                     <li className="nav-item">
