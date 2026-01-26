@@ -1,46 +1,41 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { io, Socket } from 'socket.io-client';
+import webSocketService from '../../lib/websocket-service';
 
 const WebSocketTestPage = () => {
-  const [connectionStatus, setConnectionStatus] = useState('disconnected');
+  const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'error'>('disconnected');
   const [messages, setMessages] = useState<string[]>([]);
   const [inputMessage, setInputMessage] = useState('');
-  const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    // Initialize socket connection
-    const newSocket = io('http://localhost:8000', {
-      transports: ['websocket'],
-      withCredentials: true, // Important: allow credentials to be sent
-    });
+    // Initialize WebSocket connection only once
+    webSocketService.connect('ws://localhost:8000/ws');
 
-    newSocket.on('connect', () => {
+    // Subscribe to WebSocket events
+    const unsubscribeOnOpen = webSocketService.on('open', () => {
       console.log('Connected to WebSocket server');
       setConnectionStatus('connected');
       addMessage('Connected to WebSocket server');
     });
 
-    newSocket.on('disconnect', (reason) => {
-      console.log('Disconnected from WebSocket server:', reason);
+    const unsubscribeOnClose = webSocketService.on('close', (event: any) => {
+      console.log('Disconnected from WebSocket server:', event.reason);
       setConnectionStatus('disconnected');
-      addMessage(`Disconnected: ${reason}`);
+      addMessage(`Disconnected: ${event.reason || 'Unknown reason'}`);
     });
 
-    newSocket.on('connect_error', (error) => {
+    const unsubscribeOnError = webSocketService.on('error', (error) => {
       console.error('WebSocket connection error:', error);
       setConnectionStatus('error');
-      addMessage(`Connection error: ${error.message}`);
+      addMessage(`Connection error: ${error.type || 'Unknown error'}`);
     });
 
-    setSocket(newSocket);
-
-    // Clean up on unmount
+    // Cleanup only unsubscribes from events, doesn't close the connection
     return () => {
-      if (newSocket) {
-        newSocket.close();
-      }
+      unsubscribeOnOpen();
+      unsubscribeOnClose();
+      unsubscribeOnError();
     };
   }, []);
 
@@ -48,9 +43,9 @@ const WebSocketTestPage = () => {
     setMessages(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
   };
 
-  const sendMessage = () => {
-    if (socket && inputMessage.trim()) {
-      socket.emit('message', inputMessage);
+  const sendWsMessage = () => {
+    if (inputMessage.trim()) {
+      webSocketService.sendMessage(inputMessage);
       addMessage(`Sent: ${inputMessage}`);
       setInputMessage('');
     }
@@ -58,14 +53,14 @@ const WebSocketTestPage = () => {
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      sendMessage();
+      sendWsMessage();
     }
   };
 
   return (
     <div style={{ padding: '20px' }}>
       <h1>WebSocket Connection Test</h1>
-      
+
       <div style={{ marginBottom: '20px' }}>
         <div>
           <strong>Connection Status:</strong> <span style={{ color: connectionStatus === 'connected' ? 'green' : connectionStatus === 'error' ? 'red' : 'orange' }}>
@@ -73,9 +68,9 @@ const WebSocketTestPage = () => {
           </span>
         </div>
       </div>
-      
+
       <div style={{ marginBottom: '20px' }}>
-        <input 
+        <input
           type="text"
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
@@ -83,7 +78,7 @@ const WebSocketTestPage = () => {
           placeholder="Type a message to send..."
           style={{ width: '300px', padding: '5px', marginRight: '10px' }}
         />
-        <button onClick={sendMessage} disabled={!socket || connectionStatus !== 'connected'}>
+        <button onClick={sendWsMessage} disabled={connectionStatus !== 'connected'}>
           Send Message
         </button>
       </div>

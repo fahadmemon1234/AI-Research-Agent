@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../lib/auth-context';
-import io, { Socket } from 'socket.io-client';
+import webSocketService from '../../lib/websocket-service';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -20,8 +20,7 @@ const ChatPage = () => {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [socket, setSocket] = useState<Socket | null>(null);
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { isAuthenticated } = useAuth();
@@ -32,13 +31,11 @@ const ChatPage = () => {
       return;
     }
 
-    const newSocket = io(process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000', {
-      transports: ['websocket'],
-    });
+    // Initialize WebSocket connection only once
+    webSocketService.connect(`${process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000'}/ws`);
 
-    setSocket(newSocket);
-
-    newSocket.on('stream', (data) => {
+    // Subscribe to stream events
+    const unsubscribeOnStream = webSocketService.on('stream', (data) => {
       if (data.is_complete) {
         setIsLoading(false);
       } else {
@@ -63,7 +60,8 @@ const ChatPage = () => {
       }
     });
 
-    newSocket.on('complete', (data) => {
+    // Subscribe to complete events
+    const unsubscribeOnComplete = webSocketService.on('complete', (data) => {
       setMessages(prev => {
         const lastMessage = prev[prev.length - 1];
         if (lastMessage && lastMessage.sender === 'ai') {
@@ -77,7 +75,11 @@ const ChatPage = () => {
       if (data.session_id) setSessionId(data.session_id);
     });
 
-    return () => { newSocket.close(); };
+    // Cleanup only unsubscribes from events, doesn't close the connection
+    return () => {
+      unsubscribeOnStream();
+      unsubscribeOnComplete();
+    };
   }, [isAuthenticated, router]);
 
   useEffect(() => {
@@ -85,12 +87,12 @@ const ChatPage = () => {
   }, [messages]);
 
   const handleSend = async () => {
-    if (!inputValue.trim() || isLoading || !socket) return;
+    if (!inputValue.trim() || isLoading) return;
     const userMsg: Message = { id: Date.now().toString(), content: inputValue, sender: 'user', timestamp: new Date() };
     setMessages(prev => [...prev, userMsg]);
     setInputValue('');
     setIsLoading(true);
-    socket.emit('query', { query: inputValue, session_id: sessionId });
+    webSocketService.sendMessage(inputValue, sessionId || undefined);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

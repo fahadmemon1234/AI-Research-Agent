@@ -69,9 +69,9 @@ async def upload_document(
         document = DocumentService.create_document(db, document_data)
 
         # Convert to dictionary to ensure JSON serialization
-        document_response = DocumentResponse.from_orm(document)
+        document_response = DocumentResponse.model_validate(document)
         return success_response(
-            data=document_response.model_dump(),
+            data=document_response.model_dump(mode='json'),
             message="Document uploaded successfully",
             status_code=201
         )
@@ -89,7 +89,7 @@ def list_documents(
     """
     try:
         documents = DocumentService.get_user_documents(db, current_user.id)
-        document_responses = [DocumentResponse.from_orm(doc).model_dump() for doc in documents]
+        document_responses = [DocumentResponse.model_validate(doc).model_dump(mode='json') for doc in documents]
 
         return success_response(
             data={"documents": document_responses},
