@@ -45,6 +45,7 @@ const WebSocketTestPage = () => {
 
   const sendWsMessage = () => {
     if (inputMessage.trim()) {
+      // For testing purposes, we can send with a specific session ID or let it auto-generate
       webSocketService.sendMessage(inputMessage);
       addMessage(`Sent: ${inputMessage}`);
       setInputMessage('');

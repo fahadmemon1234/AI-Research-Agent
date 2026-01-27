@@ -52,6 +52,7 @@ const MyComponent = () => {
 import webSocketService from '../lib/websocket-service';
 
 // Method 1: Using the dedicated sendMessage function (recommended)
+// If no session ID is provided, one will be auto-generated
 const sendChatMessage = (message, sessionId) => {
   const success = webSocketService.sendMessage(message, sessionId);
 
@@ -69,6 +70,11 @@ webSocketService.setSessionId('session-123');
 const sendWithDefaultSession = (message) => {
   webSocketService.sendMessage(message); // Uses the default session ID
 };
+
+// Method 3: Auto-generation (when no session ID is set or provided)
+// The service will auto-generate a unique session ID for the first message
+// and reuse it for subsequent messages
+webSocketService.sendMessage('Hello'); // Auto-generates and uses a session ID
 ```
 
 #### 3. Managing Session IDs
@@ -85,6 +91,9 @@ webSocketService.sendMessage('Hello', 'specific-session-789');
 
 // Send a message with the default session ID
 webSocketService.sendMessage('Hello'); // Uses the default session ID
+
+// Send a message without specifying a session ID (auto-generates if needed)
+webSocketService.sendMessage('Hello'); // Auto-generates if no default is set
 ```
 
 #### 4. Subscribing to Different Event Types

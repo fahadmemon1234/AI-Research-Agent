@@ -72,7 +72,11 @@ const ChatPage = () => {
         return prev;
       });
       setIsLoading(false);
-      if (data.session_id) setSessionId(data.session_id);
+      if (data.session_id) {
+        setSessionId(data.session_id);
+        // Update the WebSocket service's session ID to match the backend
+        webSocketService.setSessionId(data.session_id);
+      }
     });
 
     // Cleanup only unsubscribes from events, doesn't close the connection
