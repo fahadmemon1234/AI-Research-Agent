@@ -32,7 +32,7 @@ const ChatPage = () => {
     }
 
     // Initialize WebSocket connection only once
-    webSocketService.connect(`${process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000'}/ws`);
+    webSocketService.connect(`${process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000'}/api/v1/query/ws/chat`);
 
     // Subscribe to stream events
     const unsubscribeOnStream = webSocketService.on('stream', (data) => {
@@ -62,11 +62,15 @@ const ChatPage = () => {
 
     // Subscribe to complete events
     const unsubscribeOnComplete = webSocketService.on('complete', (data) => {
+      console.log('[ChatPage] Received complete event:', data); // Debug log
       setMessages(prev => {
         const lastMessage = prev[prev.length - 1];
         if (lastMessage && lastMessage.sender === 'ai') {
           const updatedMessages = [...prev];
-          updatedMessages[updatedMessages.length - 1] = { ...lastMessage, sources: data.sources };
+          updatedMessages[updatedMessages.length - 1] = {
+            ...lastMessage,
+            sources: data.sources || [] // Ensure sources is always an array
+          };
           return updatedMessages;
         }
         return prev;
@@ -79,10 +83,28 @@ const ChatPage = () => {
       }
     });
 
+    // Subscribe to error events
+    const unsubscribeOnError = webSocketService.on('error', (error) => {
+      console.error('[ChatPage] WebSocket error:', error);
+      setIsLoading(false);
+    });
+
+    // Also listen for generic messages that might contain errors
+    const unsubscribeOnMessage = webSocketService.on('message', (data) => {
+      console.log('[ChatPage] Received generic message:', data);
+      // Check if it's an error message
+      if (data && typeof data === 'object' && (data.type === 'error' || data.error)) {
+        console.error('[ChatPage] Error from server:', data);
+        setIsLoading(false);
+      }
+    });
+
     // Cleanup only unsubscribes from events, doesn't close the connection
     return () => {
       unsubscribeOnStream();
       unsubscribeOnComplete();
+      unsubscribeOnError();
+      unsubscribeOnMessage();
     };
   }, [isAuthenticated, router]);
 

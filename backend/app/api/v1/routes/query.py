@@ -101,9 +101,13 @@ async def websocket_chat_endpoint(websocket: WebSocket):
 
             except Exception as e:
                 log_error(e, f"Error processing streaming query for user {current_user.id}")
+                # Always send a completion message to prevent frontend from hanging
                 await websocket.send_text(json.dumps({
-                    "type": "error",
-                    "message": f"Query processing failed: {str(e)}"
+                    "type": "complete",
+                    "sources": [],
+                    "session_id": session_id,
+                    "is_complete": True,
+                    "error": f"Query processing failed: {str(e)}"
                 }))
 
     except Exception as e:
