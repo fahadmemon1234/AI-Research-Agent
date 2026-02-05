@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Research Agent - Authentication Demo</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .error {
+            color: #dc3545;
+            margin: 10px 0;
+        }
+        .success {
+            color: #28a745;
+            margin: 10px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AI Research Agent - Authentication Demo</h1>
+            <p>Demonstration of JWT authentication with your backend API</p>
+        </div>
+        
+        <div id="root"></div>
+    </div>
+
+    <script type="text/babel">
+        // API Client with JWT Authentication
+        class ApiClient {
+          constructor(baseURL) {
+            this.baseURL = baseURL || 'http://localhost:8000/api/v1';
+            this.token = localStorage.getItem('access_token');
+          }
+
+          // Set token in localStorage and update instance
+          setToken(token) {
+            this.token = token;
+            localStorage.setItem('access_token', token);
+          }
+
+          // Remove token from localStorage and instance
+          removeToken() {
+            this.token = null;
+            localStorage.removeItem('access_token');
+          }
+
+          // Generic request method with JWT authentication
+          async request(endpoint, options = {}) {
+            const config = {
+              headers: {
+                'Content-Type': 'application/json',
+                ...options.headers,
+              },
+              ...options,
+            };
+
+            // Add Authorization header if token exists
+            if (this.token) {
+              config.headers.Authorization = `Bearer ${this.token}`;
+            }
+
+            try {
+              const response = await fetch(`${this.baseURL}${endpoint}`, config);
+
+              // Handle 401 Unauthorized - token might be expired
+              if (response.status === 401) {
+                this.removeToken();
+                window.dispatchEvent(new Event('unauthorized'));
+                throw new Error('Unauthorized: Please log in again');
+              }
+
+              // Check if response is JSON
+              const contentType = response.headers.get('content-type');
+              let data;
+              
+              if (contentType && contentType.includes('application/json')) {
+                data = await response.json();
+              } else {
+                data = await response.text();
+              }
+
+              if (!response.ok) {
+                throw new Error(data.detail || `HTTP error! status: ${response.status}`);
+              }
+
+              return data;
+            } catch (error) {
+              console.error('API request error:', error);
+              throw error;
+            }
+          }
+
+          // Login method
+          async login(email, password) {
+            try {
+              const response = await this.request('/auth/login', {
+                method: 'POST',
+                body: JSON.stringify({ email, password }),
+              });
+
+              if (response.data && response.data.access_token) {
+                this.setToken(response.data.access_token);
+                return { success: true, data: response.data };
+              } else {
+                return { success: false, error: 'Invalid response from server' };
+              }
+            } catch (error) {
+              return { success: false, error: error.message };
+            }
+          }
+
+          // Logout method
+          logout() {
+            this.removeToken();
+          }
+
+          // Get user stats
+          async getUserStats() {
+            return this.request('/analytics/stats');
+          }
+
+          // Get user documents
+          async getUserDocuments(page = 1, limit = 10) {
+            return this.request(`/documents?page=${page}&limit=${limit}`);
+          }
+
+          // Get current user profile
+          async getCurrentUser() {
+            return this.request('/auth/me');
+          }
+        }
+
+        // Initialize API client
+        const apiClient = new ApiClient();
+
+        // Auth Context
+        const AuthContext = React.createContext();
+
+        // Auth Provider Component
+        const AuthProvider = ({ children }) => {
+          const [user, setUser] = React.useState(null);
+          const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+          const [loading, setLoading] = React.useState(true);
+
+          React.useEffect(() => {
+            // Check if user is authenticated on initial load
+            const checkAuthStatus = async () => {
+              const token = localStorage.getItem('access_token');
+              if (token) {
+                try {
+                  // Verify token is still valid by fetching user profile
+                  const userData = await apiClient.getCurrentUser();
+                  setUser(userData.data);
+                  setIsAuthenticated(true);
+                } catch (error) {
+                  // Token is invalid/expired, remove it
+                  localStorage.removeItem('access_token');
+                }
+              }
+              setLoading(false);
+            };
+
+            checkAuthStatus();
+
+            // Listen for unauthorized events
+            const handleUnauthorized = () => {
+              setUser(null);
+              setIsAuthenticated(false);
+              setLoading(false);
+            };
+
+            window.addEventListener('unauthorized', handleUnauthorized);
+
+            return () => {
+              window.removeEventListener('unauthorized', handleUnauthorized);
+            };
+          }, []);
+
+          const login = async (email, password) => {
+            const result = await apiClient.login(email, password);
+            if (result.success) {
+              try {
+                // Get user profile after successful login
+                const userData = await apiClient.getCurrentUser();
+                setUser(userData.data);
+                setIsAuthenticated(true);
+                return { success: true };
+              } catch (error) {
+                return { success: false, error: 'Failed to fetch user profile' };
+              }
+            }
+            return result;
+          };
+
+          const logout = () => {
+            apiClient.logout();
+            setUser(null);
+            setIsAuthenticated(false);
+          };
+
+          const value = {
+            user,
+            isAuthenticated,
+            loading,
+            login,
+            logout
+          };
+
+          return (
+            <AuthContext.Provider value={value}>
+              {children}
+            </AuthContext.Provider>
+          );
+        };
+
+        // Hook to use auth context
+        const useAuth = () => {
+          const context = React.useContext(AuthContext);
+          if (!context) {
+            throw new Error('useAuth must be used within an AuthProvider');
+          }
+          return context;
+        };
+
+        // Login Component
+        const Login = () => {
+          const [email, setEmail] = React.useState('');
+          const [password, setPassword] = React.useState('');
+          const [error, setError] = React.useState('');
+          const [loading, setLoading] = React.useState(false);
+          const { login } = useAuth();
+
+          const handleSubmit = async (e) => {
+            e.preventDefault();
+            setLoading(true);
+            setError('');
+
+            const result = await login(email, password);
+            
+            if (result.success) {
+              // Redirect to dashboard (handled by router in real app)
+              window.location.href = '/dashboard';
+            } else {
+              setError(result.error || 'Login failed');
+            }
+            
+            setLoading(false);
+          };
+
+          return (
+            <div className="card">
+              <h2>Login to AI Research Agent</h2>
+              {error && <div className="error">{error}</div>}
+              <form onSubmit={handleSubmit}>
+                <div className="form-group">
+                  <label htmlFor="email">Email:</label>
+                  <input
+                    type="email"
+                    id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="password">Password:</label>
+                  <input
+                    type="password"
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+                <button 
+                  type="submit" 
+                  className="btn"
+                  disabled={loading}
+                >
+                  {loading ? 'Logging in...' : 'Login'}
+                </button>
+              </form>
+            </div>
+          );
+        };
+
+        // Dashboard Component
+        const Dashboard = () => {
+          const [stats, setStats] = React.useState(null);
+          const [documents, setDocuments] = React.useState([]);
+          const [loading, setLoading] = React.useState(true);
+          const [error, setError] = React.useState(null);
+          const { user, logout } = useAuth();
+
+          React.useEffect(() => {
+            const fetchData = async () => {
+              try {
+                setLoading(true);
+                
+                // Fetch user stats
+                const statsData = await apiClient.getUserStats();
+                setStats(statsData.data);
+
+                // Fetch user documents
+                const docsData = await apiClient.getUserDocuments(1, 10);
+                setDocuments(docsData.data.documents);
+
+                setError(null);
+              } catch (err) {
+                setError(err.message);
+                console.error('Error fetching dashboard data:', err);
+              } finally {
+                setLoading(false);
+              }
+            };
+
+            fetchData();
+          }, []);
+
+          if (loading) return <div className="card">Loading dashboard...</div>;
+          if (error) return (
+            <div className="card">
+              <div className="error">Error: {error}</div>
+              <button onClick={logout} className="btn btn-danger">Log Out</button>
+            </div>
+          );
+
+          return (
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h2>Dashboard</h2>
+                <div>
+                  Welcome, {user?.email}! 
+                  <button 
+                    onClick={logout} 
+                    className="btn btn-danger"
+                    style={{ marginLeft: '15px' }}
+                  >
+                    Logout
+                  </button>
+                </div>
+              </div>
+              
+              <div className="card">
+                <h3>Your Statistics</h3>
+                {stats ? (
+                  <pre style={{ backgroundColor: '#f8f9fa', padding: '15px', borderRadius: '5px', overflow: 'auto' }}>
+                    {JSON.stringify(stats, null, 2)}
+                  </pre>
+                ) : (
+                  <p>No stats available</p>
+                )}
+              </div>
+              
+              <div className="card">
+                <h3>Your Documents</h3>
+                {documents.length > 0 ? (
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Filename</th>
+                        <th>Size</th>
+                        <th>Status</th>
+                        <th>Created At</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {documents.map(doc => (
+                        <tr key={doc.id}>
+                          <td>{doc.id}</td>
+                          <td>{doc.filename}</td>
+                          <td>{doc.file_size} bytes</td>
+                          <td>{doc.status}</td>
+                          <td>{doc.created_at}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p>No documents uploaded</p>
+                )}
+              </div>
+            </div>
+          );
+        };
+
+        // Protected Route Component
+        const ProtectedRoute = ({ children }) => {
+          const { isAuthenticated, loading } = useAuth();
+
+          if (loading) {
+            return <div className="card">Loading...</div>;
+          }
+
+          if (!isAuthenticated) {
+            return (
+              <div className="card">
+                <p>You need to be logged in to view this page.</p>
+                <a href="#login" style={{ color: '#007bff', textDecoration: 'none' }}>Go to Login</a>
+              </div>
+            );
+          }
+
+          return children;
+        };
+
+        // Main App Component
+        const App = () => {
+          const { loading } = useAuth();
+          const [currentPage, setCurrentPage] = React.useState(window.location.hash.substring(1) || 'login');
+
+          React.useEffect(() => {
+            const handleHashChange = () => {
+              setCurrentPage(window.location.hash.substring(1) || 'login');
+            };
+
+            window.addEventListener('hashchange', handleHashChange);
+            return () => window.removeEventListener('hashchange', handleHashChange);
+          }, []);
+
+          if (loading) {
+            return <div className="card">Loading...</div>;
+          }
+
+          return (
+            <div>
+              <nav style={{ backgroundColor: '#343a40', padding: '10px', marginBottom: '20px', borderRadius: '4px' }}>
+                <span style={{ color: 'white', fontSize: '18px', fontWeight: 'bold' }}>AI Research Agent</span>
+                <span style={{ float: 'right' }}>
+                  <a 
+                    href="#login" 
+                    style={{ color: currentPage === 'login' ? '#fff' : '#adb5bd', textDecoration: 'none', marginLeft: '20px', padding: '5px 10px', backgroundColor: currentPage === 'login' ? '#495057' : 'transparent', borderRadius: '4px' }}
+                    onClick={() => setCurrentPage('login')}
+                  >
+                    Login
+                  </a>
+                  <a 
+                    href="#dashboard" 
+                    style={{ color: currentPage === 'dashboard' ? '#fff' : '#adb5bd', textDecoration: 'none', marginLeft: '10px', padding: '5px 10px', backgroundColor: currentPage === 'dashboard' ? '#495057' : 'transparent', borderRadius: '4px' }}
+                    onClick={() => setCurrentPage('dashboard')}
+                  >
+                    Dashboard
+                  </a>
+                </span>
+              </nav>
+
+              {currentPage === 'login' || currentPage === '' ? <Login /> : <ProtectedRoute><Dashboard /></ProtectedRoute>}
+            </div>
+          );
+        };
+
+        // Render the app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        );
+    </script>
+</body>
+</html>

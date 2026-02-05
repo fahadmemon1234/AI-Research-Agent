@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../../lib/auth-context';
 import Link from 'next/link';
+import { loginUser } from '../../../lib/api-client';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -38,8 +39,20 @@ const LoginPage = () => {
 
     setLoading(true);
     try {
-      await login(email, password);
-      router.push('/dashboard');
+
+      const res = await loginUser(email, password);
+      await login(res.data.access_token);
+
+      // Check for return URL in query params
+      const urlParams = new URLSearchParams(window.location.search);
+      const returnUrl = urlParams.get('return');
+
+      // Redirect to dashboard or return URL
+      if (returnUrl) {
+        router.push(decodeURIComponent(returnUrl));
+      } else {
+        router.push('/dashboard');
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Access Denied: Invalid credentials');
     } finally {
