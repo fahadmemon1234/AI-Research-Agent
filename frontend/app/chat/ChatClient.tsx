@@ -36,7 +36,7 @@ const ChatClient = () => {
     webSocketService.connect(`${process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000'}/ws`);
 
     // Subscribe to stream events
-    const unsubscribeOnStream = webSocketService.on('stream', (data) => {
+    const unsubscribeOnStream = webSocketService.subscribe('stream', (data) => {
       if (data.is_complete) {
         setIsLoading(false);
       } else {
@@ -62,7 +62,7 @@ const ChatClient = () => {
     });
 
     // Subscribe to complete events
-    const unsubscribeOnComplete = webSocketService.on('complete', (data) => {
+    const unsubscribeOnComplete = webSocketService.subscribe('complete', (data) => {
       setMessages(prev => {
         const lastMessage = prev[prev.length - 1];
         if (lastMessage && lastMessage.sender === 'ai') {
@@ -76,7 +76,7 @@ const ChatClient = () => {
       if (data.session_id) {
         setSessionId(data.session_id);
         // Update the WebSocket service's session ID to match the backend
-        webSocketService.setSessionId(data.session_id);
+        webSocketService.send({ session_id: data.session_id });
       }
     });
 
@@ -97,7 +97,7 @@ const ChatClient = () => {
     setMessages(prev => [...prev, userMsg]);
     setInputValue('');
     setIsLoading(true);
-    webSocketService.sendMessage(inputValue, sessionId || undefined);
+    webSocketService.send({ content: inputValue, session_id: sessionId || undefined });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
